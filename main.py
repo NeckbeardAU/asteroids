@@ -14,6 +14,7 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
+        player.update(dt)
         #Use the screen.fill method to fill the screen w/ black
         screen.fill(color="black")
         player.draw(screen)
