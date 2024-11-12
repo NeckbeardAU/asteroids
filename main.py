@@ -3,6 +3,7 @@ import constants as const
 import player as p
 import asteroids as aster
 import asteroidfield as asfield
+import sys
 
 def main():
     pygame.init()
@@ -13,7 +14,7 @@ def main():
     updateable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
     asteroids = pygame.sprite.Group()
-    asteroidfield = pygame.sprite.Group()
+    asteroidfieldr = pygame.sprite.Group()
 
     # update containers
     p.Player.containers = (updateable, drawable)
@@ -33,15 +34,23 @@ def main():
             if event.type == pygame.QUIT:
                 return
             
-        #Use the screen.fill method to fill the screen w/ black
-        screen.fill(color="black")
-            
-        #Draw and update objects as required.  
         for object in updateable:
             object.update(dt)
+
+        #Check for collisions
+        for asteroid in asteroids:
+            if asteroid.collisions(player):
+                print("Game over!")
+                sys.exit()
+
+
+        #Use the screen.fill method to fill the screen w/ black
+        screen.fill(color="black")
+
         for object in drawable:
             object.draw(screen)
 
+ 
 
         #Use pygames display.flip() to refresh the screen
         pygame.display.flip()
