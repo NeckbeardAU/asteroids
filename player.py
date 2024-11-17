@@ -1,55 +1,46 @@
-import circleshape as circ
-import constants as const
-import pygame as pyg
-import shots as sh
+import pygame
+from constants import *
+from circleshape import CircleShape
+from shot import Shot
 
-class Player(circ.CircleShape):
+
+class Player(CircleShape):
     def __init__(self, x, y):
-        super().__init__(x, y, const.PLAYER_RADIUS)
+        super().__init__(x, y, PLAYER_RADIUS)
         self.rotation = 0
 
-
-
+    def draw(self, screen):
+        pygame.draw.polygon(screen, "white", self.triangle(), 2)
 
     def triangle(self):
-        forward = pyg.Vector2(0, 1).rotate(self.rotation)
-        right = pyg.Vector2(0, 1).rotate(self.rotation + 90) * self.radius / 1.5
+        forward = pygame.Vector2(0, 1).rotate(self.rotation)
+        right = pygame.Vector2(0, 1).rotate(self.rotation + 90) * self.radius / 1.5
         a = self.position + forward * self.radius
         b = self.position - forward * self.radius - right
         c = self.position - forward * self.radius + right
         return [a, b, c]
 
-    def draw(self, screen):
-        points = self.triangle()
-        pyg.draw.polygon(screen, (255,255,255), points, 2)
-
-    def rotate(self, dt):
-        self.rotation += (const.PLAYER_TURN_SPEED * dt)
- 
-
     def update(self, dt):
-        keys = pyg.key.get_pressed()
+        keys = pygame.key.get_pressed()
 
-        if keys[pyg.K_d]:
-            self.rotate(dt)
-        if keys[pyg.K_a]:
-            self.rotate(-dt)
-        if keys[pyg.K_w]:
+        if keys[pygame.K_w]:
             self.move(dt)
-        if keys[pyg.K_s]:
+        if keys[pygame.K_s]:
             self.move(-dt)
-        if keys[pyg.K_SPACE]:
+        if keys[pygame.K_a]:
+            self.rotate(-dt)
+        if keys[pygame.K_d]:
+            self.rotate(dt)
+        if keys[pygame.K_SPACE]:
             self.shoot()
 
-    def move(self, dt):
-        forward = pyg.Vector2(0, 1).rotate(self.rotation)
-        self.position += forward * const.PLAYER_SPEED * dt
-
     def shoot(self):
+        shot = Shot(self.position.x, self.position.y)
+        shot.velocity = pygame.Vector2(0, 1).rotate(self.rotation) * PLAYER_SHOOT_SPEED
 
-        direction = pyg.Vector2(0, 1).rotate(self.rotation)
-        shoot = sh.Shot(self.position.x, self.position.y, const.SHOT_RADIUS) #create the shot object
-        direction *= const.PLAYER_SHOOT_SPEED #multiply the vector by the shoot speed so that its moving at the right speed
-        shoot.velocity = direction #Set the velocity of the object 
-          
+    def rotate(self, dt):
+        self.rotation += PLAYER_TURN_SPEED * dt
 
+    def move(self, dt):
+        forward = pygame.Vector2(0, 1).rotate(self.rotation)
+        self.position += forward * PLAYER_SPEED * dt
